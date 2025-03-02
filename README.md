@@ -47,7 +47,19 @@ For each new test case, create a separate branch:
    ```
 3. **Create a Pull Request (PR) to `testing`** and request review.
 4. **Merge into `testing`** after approval.
-5. **Merge `testing` into `main`** when all tests pass.
+    ```sh
+   git checkout testing  
+   git pull origin testing  
+   git merge e2e-login-tests  
+   git push origin testing  
+   ```
+6. **Merge `testing` into `main`** when all tests pass.
+   ```sh
+   git checkout main  
+   git pull origin main  
+   git merge testing  
+   git push origin main 
+   ```
 
 ## 🎯 **Testing Frameworks & Tools**
 - **Playwright** → For E2E web testing.
