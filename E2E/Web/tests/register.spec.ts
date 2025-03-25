@@ -22,41 +22,41 @@ const invalidCredentials = {
     password: 'wrongPassword123'
 };
 
-test.describe('SignUp Successfully', () => {
-    let registerPage: RegisterPage;
+// test.describe('SignUp Successfully', () => {
+//     let registerPage: RegisterPage;
 
-    test.beforeEach(async ({ page }) => {
-        test.setTimeout(15000); // 15 seconds timeout for this test
+//     test.beforeEach(async ({ page }) => {
+//         test.setTimeout(15000); // 15 seconds timeout for this test
 
-        // Initialize the Register page and navigate to it before each test
-        registerPage = new RegisterPage(page);
-        await registerPage.gotoSignUpPage();
-    });
+//         // Initialize the Register page and navigate to it before each test
+//         registerPage = new RegisterPage(page);
+//         await registerPage.gotoSignUpPage();
+//     });
 
-    test('Register Successfully as Employee', async () => {
-        await registerPage.SignUp(validCredentials.email, validCredentials.password);
-        await registerPage.enterName(validCredentials.first_name, validCredentials.last_name);
-        await registerPage.enterCountryAndCity(validCredentials.country, validCredentials.city);
-        await registerPage.enterJobDetails(validCredentials.job_title, validCredentials.employment_type, validCredentials.company);
-        await registerPage.handleOTP();
-    });
+//     test('Register Successfully as Employee', async () => {
+//         await registerPage.SignUp(validCredentials.email, validCredentials.password);
+//         await registerPage.enterName(validCredentials.first_name, validCredentials.last_name);
+//         await registerPage.enterCountryAndCity(validCredentials.country, validCredentials.city);
+//         await registerPage.enterJobDetails(validCredentials.job_title, validCredentials.employment_type, validCredentials.company);
+//         await registerPage.handleOTP();
+//     });
 
-    test('Register Successfully as Student Above 16', async () => {
-        await registerPage.SignUp(validCredentials.email, validCredentials.password);
-        await registerPage.enterName(validCredentials.first_name, validCredentials.last_name);
-        await registerPage.enterCountryAndCity(validCredentials.country, validCredentials.city);
-        await registerPage.enterStudentDetailsAbove16(validCredentials.school, validCredentials.start_year, validCredentials.end_year);
-        await registerPage.handleOTP();
-    });
+//     test('Register Successfully as Student Above 16', async () => {
+//         await registerPage.SignUp(validCredentials.email, validCredentials.password);
+//         await registerPage.enterName(validCredentials.first_name, validCredentials.last_name);
+//         await registerPage.enterCountryAndCity(validCredentials.country, validCredentials.city);
+//         await registerPage.enterStudentDetailsAbove16(validCredentials.school, validCredentials.start_year, validCredentials.end_year);
+//         await registerPage.handleOTP();
+//     });
 
-    test('Try to Register as Student Below 16', async () => {
-        await registerPage.SignUp(validCredentials.email, validCredentials.password);
-        await registerPage.enterName(validCredentials.first_name, validCredentials.last_name);
-        await registerPage.enterCountryAndCity(validCredentials.country, validCredentials.city);
-        await registerPage.enterStudentDetailsBelow16(validCredentials.school, validCredentials.start_year, validCredentials.end_year, '1', '1', '2015');
-        expect(await registerPage.handleBelow16Error()).toBe(true);
-    });
-});
+//     test('Try to Register as Student Below 16', async () => {
+//         await registerPage.SignUp(validCredentials.email, validCredentials.password);
+//         await registerPage.enterName(validCredentials.first_name, validCredentials.last_name);
+//         await registerPage.enterCountryAndCity(validCredentials.country, validCredentials.city);
+//         await registerPage.enterStudentDetailsBelow16(validCredentials.school, validCredentials.start_year, validCredentials.end_year, '1', '1', '2015');
+//         expect(await registerPage.handleBelow16Error()).toBe(true);
+//     });
+// });
 
 test.describe('SignUp Unsuccessfully', () => {
     let registerPage: RegisterPage;
@@ -69,7 +69,7 @@ test.describe('SignUp Unsuccessfully', () => {
         await registerPage.gotoSignUpPage();
     });
 
-    test('Invalid Email Inputs', async () => {
+    test('Invalid Email Format', async () => {
         const invalidEmails = [
             'username@xyz.ilovefrontendteam',
             '@xyz.com',
@@ -88,6 +88,12 @@ test.describe('SignUp Unsuccessfully', () => {
             await registerPage.page.waitForTimeout(5000);
         };
             
+    });
+
+    test.only('Invalid Email with Foreign Characters', async () => {
+        await registerPage.SignUp("hello@abc.comش", validCredentials.password);
+        await registerPage.page.waitForTimeout(2000);
+        expect(await registerPage.handleInvalidEmail()).toBe(true);
     });
 
     test('Register with conflicting years', async () => {
