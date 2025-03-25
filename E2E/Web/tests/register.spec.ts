@@ -3,7 +3,7 @@ import { RegisterPage } from '../pages/register-page';
 
 // Test data
 const validCredentials = {
-    email: 'testUser21@abc.com',
+    email: 'testUser27@abc.com',
     password: 'abc-ABC-12',
     first_name: 'Test',
     last_name: 'User',
@@ -17,46 +17,57 @@ const validCredentials = {
     end_year: '2015'
 };
 
-const invalidCredentials = {
-    username: 'wrongUser',
-    password: 'wrongPassword123'
-};
+test.describe('SignUp Successfully', () => {
+    let registerPage: RegisterPage;
+    let accountCreated = false;
 
-// test.describe('SignUp Successfully', () => {
-//     let registerPage: RegisterPage;
+    test.beforeEach(async ({ page }) => {
+        test.setTimeout(15000); // 15 seconds timeout for this test
 
-//     test.beforeEach(async ({ page }) => {
-//         test.setTimeout(15000); // 15 seconds timeout for this test
+        // Initialize the Register page and navigate to it before each test
+        registerPage = new RegisterPage(page);
+        await registerPage.gotoSignUpPage();
+    });
 
-//         // Initialize the Register page and navigate to it before each test
-//         registerPage = new RegisterPage(page);
-//         await registerPage.gotoSignUpPage();
-//     });
+    test.afterEach(async ({ page }) => {
+        if (!accountCreated) return;
+        const response = await fetch('http://localhost:3000/api/v1/user/test-delete-account', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ "email" : validCredentials.email })
+        });
+        expect(response.status).toBe(200);
+        accountCreated = false;
+    });
 
-//     test('Register Successfully as Employee', async () => {
-//         await registerPage.SignUp(validCredentials.email, validCredentials.password);
-//         await registerPage.enterName(validCredentials.first_name, validCredentials.last_name);
-//         await registerPage.enterCountryAndCity(validCredentials.country, validCredentials.city);
-//         await registerPage.enterJobDetails(validCredentials.job_title, validCredentials.employment_type, validCredentials.company);
-//         await registerPage.handleOTP();
-//     });
+    test('Register Successfully as Employee', async () => {
+        await registerPage.SignUp(validCredentials.email, validCredentials.password);
+        await registerPage.enterName(validCredentials.first_name, validCredentials.last_name);
+        await registerPage.enterCountryAndCity(validCredentials.country, validCredentials.city);
+        await registerPage.enterJobDetails(validCredentials.job_title, validCredentials.employment_type, validCredentials.company);
+        await registerPage.handleOTP();
+        accountCreated = true;
+    });
 
-//     test('Register Successfully as Student Above 16', async () => {
-//         await registerPage.SignUp(validCredentials.email, validCredentials.password);
-//         await registerPage.enterName(validCredentials.first_name, validCredentials.last_name);
-//         await registerPage.enterCountryAndCity(validCredentials.country, validCredentials.city);
-//         await registerPage.enterStudentDetailsAbove16(validCredentials.school, validCredentials.start_year, validCredentials.end_year);
-//         await registerPage.handleOTP();
-//     });
+    test('Register Successfully as Student Above 16', async () => {
+        await registerPage.SignUp(validCredentials.email, validCredentials.password);
+        await registerPage.enterName(validCredentials.first_name, validCredentials.last_name);
+        await registerPage.enterCountryAndCity(validCredentials.country, validCredentials.city);
+        await registerPage.enterStudentDetailsAbove16(validCredentials.school, validCredentials.start_year, validCredentials.end_year);
+        await registerPage.handleOTP();
+        accountCreated = true;
+    });
 
-//     test('Try to Register as Student Below 16', async () => {
-//         await registerPage.SignUp(validCredentials.email, validCredentials.password);
-//         await registerPage.enterName(validCredentials.first_name, validCredentials.last_name);
-//         await registerPage.enterCountryAndCity(validCredentials.country, validCredentials.city);
-//         await registerPage.enterStudentDetailsBelow16(validCredentials.school, validCredentials.start_year, validCredentials.end_year, '1', '1', '2015');
-//         expect(await registerPage.handleBelow16Error()).toBe(true);
-//     });
-// });
+    test('Try to Register as Student Below 16', async () => {
+        await registerPage.SignUp(validCredentials.email, validCredentials.password);
+        await registerPage.enterName(validCredentials.first_name, validCredentials.last_name);
+        await registerPage.enterCountryAndCity(validCredentials.country, validCredentials.city);
+        await registerPage.enterStudentDetailsBelow16(validCredentials.school, validCredentials.start_year, validCredentials.end_year, '1', '1', '2015');
+        expect(await registerPage.handleBelow16Error()).toBe(true);
+    });
+});
 
 test.describe('SignUp Unsuccessfully', () => {
     let registerPage: RegisterPage;
@@ -90,7 +101,7 @@ test.describe('SignUp Unsuccessfully', () => {
             
     });
 
-    test.only('Invalid Email with Foreign Characters', async () => {
+    test('Invalid Email with Foreign Characters', async () => {
         await registerPage.SignUp("hello@abc.comش", validCredentials.password);
         await registerPage.page.waitForTimeout(2000);
         expect(await registerPage.handleInvalidEmail()).toBe(true);
@@ -111,17 +122,3 @@ test.describe('SignUp Unsuccessfully', () => {
 });
 
 });
-
-/* 
-
-const response = await fetch('http://localhost:3000/api/v1/user/test-delete-account', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email })
-            });
-            // ensure status code is 200
-            expect(response.status).toBe(200);
-        }
-*/
