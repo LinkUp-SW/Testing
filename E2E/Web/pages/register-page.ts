@@ -73,14 +73,17 @@ export class RegisterPage {
     }
 
     async enterCountryAndCity(country: string, city: string) {
-        await this.country_dropdown.selectOption({ label: country });
-        await this.city_dropdown.selectOption({ label: city });
+        await this.country_dropdown.click();
+        await this.page.getByRole('option', { name: country }).click();
+        await this.city_dropdown.click();
+        await this.page.getByRole('option', { name: city }).click();
         this.continue_button.click();
     }
 
     async enterJobDetails(jobTitle: string, employment_type : string, company: string) {
         await this.job_title_textbox.fill(jobTitle);
-        await this.employment_type_dropdown.selectOption({ label: employment_type });
+        await this.employment_type_dropdown.click();
+        await this.page.getByRole('option', { name: employment_type }).click();
         await this.company_textbox.fill(company);
         this.continue_button.click();
     }
@@ -88,8 +91,10 @@ export class RegisterPage {
     async enterStudentDetailsAbove16(school: string, startYear: string, endYear: string) {
         await this.isStudent_button.click();
         await this.school_or_college_textbox.fill(school);
-        await this.start_year_dropdown.selectOption({ label: startYear }); // # TODO test with invalid years
-        await this.end_year_dropdown.selectOption({ label: endYear });
+        await this.start_year_dropdown.click();
+        await this.page.getByRole('option', { name: startYear }).click();
+        await this.end_year_dropdown.click();
+        await this.page.getByRole('option', { name: endYear }).click();
         this.continue_button.click();
     }
 
@@ -97,17 +102,103 @@ export class RegisterPage {
         await this.isStudent_button.click();
         this.is_above_16_button.click();
         await this.school_or_college_textbox.fill(school);
-        await this.start_year_dropdown.selectOption({ label: startYear });
-        await this.end_year_dropdown.selectOption({ label: endYear });
-        await this.birth_day_dropdown.selectOption({ label: birthDay });
-        await this.birth_month_dropdown.selectOption({ label: birthMonth });
-        await this.birth_year_dropdown.selectOption({ label: birthYear });
+        await this.start_year_dropdown.click();
+        await this.page.getByRole('option', { name: startYear }).click();
+        await this.end_year_dropdown.click();
+        await this.page.getByRole('option', { name: endYear }).click();
+        await this.birth_day_dropdown.click();
+        await this.page.getByRole('option', { name: birthDay, exact: true }).click();
+        await this.birth_month_dropdown.click();
+        await this.page.getByRole('option', { name: birthMonth, exact: true }).click();
+        await this.birth_year_dropdown.click();
+        await this.page.getByRole('option', { name: birthYear, exact : true }).click();
         this.continue_button.click();
     }
 
     async handleOTP() {
-
+        let otpCode = '';
+    
+        // Listen for console logs and capture the OTP
+        this.page.on('console', (msg) => {
+            const messageText = msg.text();
+            if (/^\d{6}$/.test(messageText)) // OTP is 6-digits
+                otpCode = messageText; // Capture the OTP from the console log
+        });
+        await this.page.waitForTimeout(10000); 
+        // Fill in the OTP if it has been captured
+        if (otpCode) {
+            await this.otp_field.fill(otpCode);
+        } else {
+            console.log('OTP was not captured!');
+        }
     }
+
+    // async handleBelow16Error() {
+    //     // ensure "Under 16" error message is displayed
+    //     this.page.on('console', (msg) => {
+    //         const messageText = msg.text();
+    //         return messageText === "Under 16";
+    //     });
+    // }
+    async handleBelow16Error() {
+        return new Promise((resolve) => {
+            this.page.on('console', (msg) => {
+                const messageText = msg.text();
+                if (messageText === "Under 16") {
+                    resolve(true);
+                }
+            });
+    
+            // Add a timeout to avoid waiting indefinitely
+            setTimeout(() => {
+                resolve(false);
+            }, 1000); // 1 second timeout
+        });
+    }
+
+    // async handleConflictingYears() {
+    //     // ensure "Invalid school year" error message is displayed
+    //     this.page.on('console', (msg) => {
+    //         const messageText = msg.text();
+    //         console.log(messageText);
+    //         return messageText === "Invalid school year";
+    //     });
+    // }
+    async handleConflictingYears() {
+        return new Promise((resolve) => {
+            this.page.on('console', (msg) => {
+                const messageText = msg.text();
+                console.log(messageText);
+                if (messageText === "Invalid school year") {
+                    resolve(true);
+                }
+            });
+    
+            // Add a timeout to avoid waiting indefinitely
+            setTimeout(() => {
+                resolve(false);
+            }, 1000); // 1 second timeout
+        });
+    }
+
+    handleInvalidEmail = async () => !this.first_name_textbox.isVisible();
+
+    refreshPage = async () => await this.page.reload();
+
+    async handleExistingEmail() {
+        return new Promise((resolve) => {
+            this.page.on('console', (msg) => {
+                const messageText = msg.text();
+                if (messageText === "Already Exists") resolve(true);            
+            });
+    
+            // Add a timeout to avoid waiting indefinitely
+            setTimeout(() => {
+                resolve(false);
+            }, 1000); // 1 second timeout
+        });
+    }
+
 
 }
 

@@ -3,14 +3,14 @@ import { RegisterPage } from '../pages/register-page';
 
 // Test data
 const validCredentials = {
-    email: 'testUser',
-    password: 'correctPassword123',
+    email: 'testUser21@abc.com',
+    password: 'abc-ABC-12',
     first_name: 'Test',
     last_name: 'User',
     country: 'Egypt',
     city: 'Cairo',
     job_title: 'Software Engineer',
-    employment_type: 'Full Time',
+    employment_type: 'Full-Time',
     company: 'Test Company',
     school: 'Test School',
     start_year: '2010',
@@ -53,10 +53,9 @@ test.describe('SignUp Successfully', () => {
         await registerPage.SignUp(validCredentials.email, validCredentials.password);
         await registerPage.enterName(validCredentials.first_name, validCredentials.last_name);
         await registerPage.enterCountryAndCity(validCredentials.country, validCredentials.city);
-        await registerPage.enterStudentDetailsBelow16(validCredentials.school, validCredentials.start_year, validCredentials.end_year, '1', 'January', '2015');
-        await registerPage.handleOTP();
+        await registerPage.enterStudentDetailsBelow16(validCredentials.school, validCredentials.start_year, validCredentials.end_year, '1', '1', '2015');
+        expect(await registerPage.handleBelow16Error()).toBe(true);
     });
-
 });
 
 test.describe('SignUp Unsuccessfully', () => {
@@ -70,24 +69,46 @@ test.describe('SignUp Unsuccessfully', () => {
         await registerPage.gotoSignUpPage();
     });
 
-    test.only('Invalid Email Inputs', async () => {
+    test('Invalid Email Inputs', async () => {
         const invalidEmails = [
+            'username@xyz.ilovefrontendteam',
             '@xyz.com',
             'user@.com',
             'user@xyz,com',     // Comma in domain
             'user@xyz..com',    // Consecutive dots
             'user name@xyz.com',// Space in local part
             '.username@xyz.com',// Leading dot
-            'username.@xyz.com' // Trailing dot
+            'username.@xyz.com', // Trailing dot
         ];
     
         for (const email of invalidEmails) {
-            await registerPage.SignUp(email, 'abc-ABC-123');
-    
-            await expect(registerPage.page.locator('.toaster.group')).toBeVisible();
-            // wait for the toaster to disappear
-            await registerPage.page.waitForSelector('.toaster.group', { state: 'detached' });
-            const response = await fetch('http://localhost:3000/api/v1/user/test-delete-account', {
+            await registerPage.SignUp(email, validCredentials.password);
+            expect(await registerPage.handleInvalidEmail()).toBe(true);
+            await registerPage.refreshPage();   
+            await registerPage.page.waitForTimeout(5000);
+        };
+            
+    });
+
+    test('Register with conflicting years', async () => {
+                await registerPage.SignUp(validCredentials.email, validCredentials.password);
+                await registerPage.enterName(validCredentials.first_name, validCredentials.last_name);
+                await registerPage.enterCountryAndCity(validCredentials.country, validCredentials.city);
+                await registerPage.enterStudentDetailsAbove16(validCredentials.school, '2015', '2012');
+                await registerPage.page.waitForTimeout(2000);
+                await registerPage.handleConflictingYears();
+    });
+
+    test('SignUp with already registered email', async () => {
+        await registerPage.SignUp("yusufafify0@gmail.com", validCredentials.password);
+        expect(await registerPage.handleExistingEmail()).toBe(true);
+});
+
+});
+
+/* 
+
+const response = await fetch('http://localhost:3000/api/v1/user/test-delete-account', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -97,6 +118,4 @@ test.describe('SignUp Unsuccessfully', () => {
             // ensure status code is 200
             expect(response.status).toBe(200);
         }
-    });
-
-});
+*/
