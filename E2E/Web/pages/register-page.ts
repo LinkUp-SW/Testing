@@ -181,7 +181,9 @@ export class RegisterPage {
         });
     }
 
-    handleInvalidEmail = async () => !this.first_name_textbox.isVisible();
+    async handleInvalidEmail() {
+        return !(await this.first_name_textbox.isVisible());
+    }
 
     refreshPage = async () => await this.page.reload();
 
