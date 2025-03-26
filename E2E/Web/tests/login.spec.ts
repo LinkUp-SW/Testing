@@ -29,7 +29,11 @@ const xssAttackCredentials ={
     username: '<script>alert("XSS")</script>',
     password: 'Sm_101103n'
 };
+const phoneNumberCredentials={
+    username:'01066131307' ,
+    password: 'Sm_101103n2'
 
+}
 const forgotPasswordWrongEmail = 'SM@gmail.com';
 
 const forgotPasswordEmail = 'samam0362@gmail.com';
@@ -47,6 +51,12 @@ test.describe('Login Functionality', () => {
 
     test('should login successfully with valid credentials', async () => {
         await loginPage.login(validCredentials.username, validCredentials.password);
+    
+        expect(await loginPage.isLoggedIn()).toBeTruthy();
+    });
+
+    test('should login successfully with valid phone number', async () => {
+        await loginPage.login(phoneNumberCredentials.username, phoneNumberCredentials.password);
     
         expect(await loginPage.isLoggedIn()).toBeTruthy();
     });
@@ -137,5 +147,41 @@ test.describe('Login Functionality', () => {
         
         expect(messages.some(msg => msg.includes("http://localhost:5173/reset-password/"))).toBeTruthy();
     });
+
+    test('should reset password and login with new credentials', async ({ page, context }) => {
+        const messages: string[] = [];
+    
+        page.on('console', (msg) => {
+            messages.push(msg.text());
+        });
+    
+        await loginPage.forgotPassword(forgotPasswordEmail);
+    
+        // Wait for console logs to capture reset link
+        await page.waitForTimeout(6000);
+    
+        // Extract reset link
+        const resetLink = messages.find(msg => msg.includes("http://localhost:5173/reset-password/"));
+        expect(resetLink).toBeTruthy();
+    
+        // Open reset link in a new page
+        const resetPage = await context.newPage();
+        await resetPage.goto(resetLink!);
+    
+        // Fill new password and confirmation password
+        await resetPage.locator('#new-password').fill('Sm_101103n');
+        await resetPage.locator('#confirm-password').fill('Sm_101103n');
+        await resetPage.getByRole('button', { name: 'Continue' }).click();
+    
+        
+        await resetPage.waitForURL('**/login', { timeout: 10000 });
+    
+        await page.goto('http://localhost:5173/login');
+        
+        await loginPage.login(forgotPasswordEmail, 'Sm_101103n');
+        expect(await loginPage.isLoggedIn()).toBeTruthy();
+    });
+    
+    
     
 });
