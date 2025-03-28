@@ -3,7 +3,7 @@ import { RegisterPage } from '../pages/register-page';
 
 // Test data
 const validCredentials = {
-    email: 'testUser27@abc.com',
+    email: 'testUser28@abc.com',
     password: 'abc-ABC-12',
     first_name: 'Test',
     last_name: 'User',
