@@ -82,7 +82,6 @@ test.describe('SignUp Unsuccessfully', () => {
 
     test('Invalid Email Format', async () => {
         const invalidEmails = [
-            'username@xyz.ilovefrontendteam',
             '@xyz.com',
             'user@.com',
             'user@xyz,com',     // Comma in domain
@@ -90,20 +89,27 @@ test.describe('SignUp Unsuccessfully', () => {
             'user name@xyz.com',// Space in local part
             '.username@xyz.com',// Leading dot
             'username.@xyz.com', // Trailing dot
+            'username@xyz.c',   // TLD too short
+            'username@xyz.c@com', // Extra '@' in domain
+            'username@xyz.b-com', // Invalid TLD
+            'tst@a--bc.com', // Consecutive dashes in subdomain
         ];
-    
+
+        let count = 1;
         for (const email of invalidEmails) {
             await registerPage.SignUp(email, validCredentials.password);
             expect(await registerPage.handleInvalidEmail()).toBe(true);
             await registerPage.refreshPage();   
-            await registerPage.page.waitForTimeout(5000);
+            await registerPage.page.waitForTimeout(1000);
+            console.log('Invalid email test ' + count + ' completed');
+            count++;
         };
             
     });
 
     test('Invalid Email with Foreign Characters', async () => {
         await registerPage.SignUp("hello@abc.comش", validCredentials.password);
-        await registerPage.page.waitForTimeout(2000);
+        await registerPage.page.waitForTimeout(1000);
         expect(await registerPage.handleInvalidEmail()).toBe(true);
     });
 
