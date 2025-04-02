@@ -4,8 +4,8 @@ export const config: WebdriverIO.Config = {
     specs: ['./test/specs/**/*.ts'],
     capabilities: [{
         platformName: 'Android',
-        'appium:deviceName': 'emulator-5554',  // Change based on your emulator/device
-        'appium:platformVersion': '15.0',  // Your Android version
+        'appium:deviceName': 'emulator-5554', 
+        'appium:platformVersion': '15.0',  
         'appium:automationName': 'UiAutomator2',
         'appium:app': "D:/Mohamed/BDE/Software Engineering/LinkUp Repo/Cross/APK File/app-release.apk",  
         'appium:noReset': true,
