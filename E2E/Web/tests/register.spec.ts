@@ -3,7 +3,7 @@ import { RegisterPage } from '../pages/register-page';
 
 // Test data
 const validCredentials = {
-    email: 'testUser29@abc.com',
+    email: 'testuser30@abc.com',
     password: 'abc-ABC-12',
     first_name: 'Test',
     last_name: 'User',
@@ -11,8 +11,8 @@ const validCredentials = {
     city: 'Cairo',
     job_title: 'Software Engineer',
     employment_type: 'Full-Time',
-    company: 'Test Company',
-    school: 'Test School',
+    company: 'smart systems',
+    school: 'Digital Creations',
     start_year: '2010',
     end_year: '2015'
 };

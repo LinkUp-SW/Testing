@@ -1,32 +1,40 @@
-import { ChainablePromiseElement } from 'webdriverio';
-
 class LoginPage {
-    get emailInput(): ChainablePromiseElement {
+    // Selectors as methods to avoid early evaluation
+    private get emailInput() {
         return $('android=new UiSelector().className("android.widget.EditText").instance(0)');
     }
 
-    get passwordInput(): ChainablePromiseElement {
-        return $('android=new UiSelector().className("android.widget.EditText").instance(1)');
+    private get passwordInput() {
+        return $('//android.widget.EditText[@text="Password"]');
     }
 
-    get continueButton(): ChainablePromiseElement {
+    private get continueButton() {
         return $('~Continue');
     }
 
-    get forgetPasswordButton(): ChainablePromiseElement {
+    private get forgetPasswordButton() {
         return $('~Forget Password?');
     }
 
-    get joinNowButton(): ChainablePromiseElement {
+    private get joinNowButton() {
         return $('~Join Now');
     }
 
-
     async login(email: string, password: string): Promise<void> {
+        // Email
+        await this.emailInput.waitForDisplayed({ timeout: 15000 });
+        await this.emailInput.click(); // Force focus
         await this.emailInput.setValue(email);
+      
+        // Password
+        await this.passwordInput.waitForDisplayed({ timeout: 15000 });
+        await this.passwordInput.click(); // Force focus
         await this.passwordInput.setValue(password);
+      
+        // Continue
+        await this.continueButton.waitForDisplayed({ timeout: 15000 });
         await this.continueButton.click();
-    }
+      }
 }
 
 export default new LoginPage();

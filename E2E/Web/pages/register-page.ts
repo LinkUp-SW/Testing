@@ -85,12 +85,14 @@ export class RegisterPage {
         await this.employment_type_dropdown.click();
         await this.page.getByRole('option', { name: employment_type }).click();
         await this.company_textbox.fill(company);
+        await this.page.getByRole('listitem').click();
         this.continue_button.click();
     }
 
     async enterStudentDetailsAbove16(school: string, startYear: string, endYear: string) {
         await this.isStudent_button.click();
         await this.school_or_college_textbox.fill(school);
+        await this.page.getByRole('listitem').click();
         await this.start_year_dropdown.click();
         await this.page.getByRole('option', { name: startYear }).click();
         await this.end_year_dropdown.click();
@@ -102,6 +104,7 @@ export class RegisterPage {
         await this.isStudent_button.click();
         this.is_above_16_button.click();
         await this.school_or_college_textbox.fill(school);
+        await this.page.getByRole('listitem').click();
         await this.start_year_dropdown.click();
         await this.page.getByRole('option', { name: startYear }).click();
         await this.end_year_dropdown.click();
