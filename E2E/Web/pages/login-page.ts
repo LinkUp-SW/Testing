@@ -43,6 +43,8 @@ export class LoginPage {
         await this.password_textbox.fill(password);
         await this.login_button.waitFor();
         await this.login_button.click();
+        // wait till page is loaded
+        await this.page.waitForLoadState('networkidle');
     }
 
     async forgotPassword(email: string) {
