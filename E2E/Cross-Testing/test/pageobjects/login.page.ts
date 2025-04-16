@@ -5,7 +5,7 @@ class LoginPage {
     }
 
     private get passwordInput() {
-        return $('//android.widget.EditText[@text="Password"]');
+        return $('android=new UiSelector().className("android.widget.EditText").instance(1)');
     }
 
     private get continueButton() {
@@ -28,7 +28,6 @@ class LoginPage {
       
         // Password
         await this.passwordInput.waitForDisplayed({ timeout: 15000 });
-        await this.passwordInput.click(); // Force focus
         await this.passwordInput.setValue(password);
       
         // Continue

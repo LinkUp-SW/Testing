@@ -7,7 +7,7 @@ export const config: WebdriverIO.Config = {
         'appium:deviceName': 'emulator-5554', 
         'appium:platformVersion': '15.0',  
         'appium:automationName': 'UiAutomator2',
-        'appium:app': "D:/Mohamed/BDE/Software Engineering/LinkUp Repo/Cross/APK File/app-release.apk",  
+        'appium:app': "D:/Mohamed/BDE/Software Engineering/LinkUp Repo/Cross/APK File/app-debug.apk",  
         'appium:noReset': true,
     }],
     framework: 'mocha',
