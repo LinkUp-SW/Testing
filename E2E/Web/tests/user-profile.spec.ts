@@ -4,14 +4,14 @@ import { LoginPage } from '../pages/login-page';
 
 // Test data
 const validCredentials = {
-    email: 'darwin@nunez.com',
+    email: 'mathys@tel.com',
     password: 'abc-ABC-12',
-    valid_profile_pic: 'D:\\Mohamed\\BDE\\Software Engineering\\LinkUp Repo\\Testing\\E2E\\Web\\Assets\\Pic3.webp',
+    valid_profile_pic: 'D:\\Mohamed\\BDE\\Software Engineering\\LinkUp Repo\\Testing\\E2E\\Web\\Assets\\Tel.jpg',
     oversized_profile_pic: 'D:\\Mohamed\\BDE\\Software Engineering\\LinkUp Repo\\Testing\\E2E\\Web\\Assets\\bigImage.jpg',
     valid_cover_photo: 'D:\\Mohamed\\BDE\\Software Engineering\\LinkUp Repo\\Testing\\E2E\\Web\\Assets\\cover.webp',
     experience_title: 'Left Winger',
     employment_type: 'Full-time',
-    company: 'CloudForce Technologies',
+    company: 'Orange',
     start_month: 'March',
     start_year: '2022',
     end_month: 'December',
@@ -19,7 +19,7 @@ const validCredentials = {
     location: 'Portugal',
     location_type: 'onsite',
     description: 'During my time at Benfica, I truly came into my own as a forward, showcasing my ability to score goals and make a difference in crucial moments. I was proud to help the team in both domestic competitions and on the European stage, where we faced some of the best clubs in the world. My performances earned me recognition as one of the top young talents in football, and I was honored to secure a move to one of the biggest clubs in the world as a result.',
-    school: 'Future Academy',
+    school: 'Mansoura University',
     degree: 'Bachelor of Science',
     field_of_study: 'Computer Science',
     education_start_month: 'September',
@@ -28,6 +28,9 @@ const validCredentials = {
     education_end_year: '2022',
     education_grade: 'A',
     activities: 'Football, Basketball',
+    resume_path: 'D:\\Mohamed\\BDE\\Software Engineering\\LinkUp Repo\\Testing\\E2E\\Web\\Assets\\resume.pdf',
+    invalid_resume_path: 'D:\\Mohamed\\BDE\\Software Engineering\\LinkUp Repo\\Testing\\E2E\\Web\\Assets\\resume.txt',
+    large_pdf_path: 'D:\\Mohamed\\BDE\\Software Engineering\\LinkUp Repo\\Testing\\E2E\\Web\\Assets\\large pdf.pdf',
 };
 
 test.describe('Profile Picture Testcases', () => {
@@ -236,4 +239,42 @@ test.describe("Skills Testcases", () => {
         const response = await responsePromise;
         expect(response.status()).toBe(200);
     });
+});
+
+test.describe("Upload Resume Testcases", () => {
+    let userProfilePage: UserProfile;
+
+    test.beforeEach(async ({ page }) => {
+        test.setTimeout(15000); // 15 seconds timeout for this test
+
+        let loginPage = new LoginPage(page);
+        await loginPage.gotoLoginPage();
+        await loginPage.login(validCredentials.email, validCredentials.password);
+        userProfilePage = new UserProfile(page);
+        userProfilePage.gotoProfilePage();
+    });
+
+    test('Upload a valid resume', async () => {
+        const responsePromise = userProfilePage.page.waitForResponse(
+            response => 
+                response.url().includes('/user/profile/resume') && 
+                response.request().method() === 'POST'
+        );
+        await userProfilePage.uploadResume(validCredentials.resume_path, true);
+        
+        const response = await responsePromise;
+        expect(response.status()).toBe(200);
+      });
+
+      test('Upload resume with invalid format', async () => {
+        await userProfilePage.uploadResume(validCredentials.invalid_resume_path, false);
+        await expect(userProfilePage.page.locator('#resume-alert-description')).toBeVisible();
+        await expect(userProfilePage.page.locator('#resume-alert-description')).toHaveText('Only PDF files are accepted');
+      });
+
+      test('Upload resume with invalid size', async () => {
+        await userProfilePage.uploadResume(validCredentials.large_pdf_path, false);
+        await expect(userProfilePage.page.locator('#resume-alert-description')).toBeVisible();
+        await expect(userProfilePage.page.locator('#resume-alert-description')).toHaveText('File size exceeds 2MB limit');
+      });
 });
