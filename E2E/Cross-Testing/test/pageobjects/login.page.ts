@@ -12,14 +12,6 @@ class LoginPage {
         return $('~Continue');
     }
 
-    private get forgetPasswordButton() {
-        return $('~Forget Password?');
-    }
-
-    private get joinNowButton() {
-        return $('~Join Now');
-    }
-
     async login(email: string, password: string): Promise<void> {
         // Email
         await this.emailInput.waitForDisplayed({ timeout: 15000 });
