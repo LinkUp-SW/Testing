@@ -105,6 +105,7 @@ export class UserProfile {
         await this.upload_photo_button.click();
         const fileChooser = await fileChooserPromise;
         await fileChooser.setFiles(filePath);
+        if (await this.page.getByText('Image is larger than 2MB').isVisible()) return false;
         await this.save_changes_button.click();
         await this.save_photo_button.click();
         await this.page.waitForTimeout(5000);

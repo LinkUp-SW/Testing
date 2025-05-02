@@ -72,16 +72,8 @@ test.describe('Profile Picture Testcases', () => {
       });
 
       test('Upload an oversized profile picture', async () => {
-        test.setTimeout(30000); // 30 seconds timeout for this test
-        const responsePromise = userProfilePage.page.waitForResponse(
-          response => 
-            response.url().includes('/user/profile/profile-picture') && 
-            response.request().method() === 'PUT'
-        );
-      
-        await userProfilePage.uploadProfilePicture(validCredentials.oversized_profile_pic); 
-        const response = await responsePromise;
-        expect(response.status()).toBe(400);
+        const result = await userProfilePage.uploadProfilePicture(validCredentials.oversized_profile_pic); 
+        expect(result).toBe(false); 
       });
 });
 
