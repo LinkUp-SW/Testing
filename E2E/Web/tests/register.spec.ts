@@ -11,8 +11,8 @@ const validCredentials = {
     city: 'Cairo',
     job_title: 'Software Engineer',
     employment_type: 'Full-Time',
-    company: 'smart systems',
-    school: 'Digital Creations',
+    company: 'Vodafone',
+    school: 'Mansoura University',
     start_year: '2010',
     end_year: '2015'
 };

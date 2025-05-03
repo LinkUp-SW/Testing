@@ -4,9 +4,6 @@ export class UserProfile {
     // Page instance
     public readonly page: Page;
     
-    // URL
-    private readonly profileURL = 'http://localhost:5173/user-profile/Darwin-N%C3%BA%C3%B1ez57';
-    
     // Page elements
     private readonly edit_profile_outer_button;
     private readonly edit_profile_inner_button;
@@ -48,6 +45,7 @@ export class UserProfile {
     private readonly deleteEducation_button;
     private readonly delete_skill_button;
     private readonly skill_name;
+    private readonly upload_resume_button;
 
     
 
@@ -95,11 +93,11 @@ export class UserProfile {
         this.add_skill_button = page.locator('#add-skill-button');
         this.delete_skill_button = page.locator('#skill-delete-button-0');
         this.skill_name = page.locator('#skill-name');
+        this.upload_resume_button = page.locator('#upload-resume-btn');
         
     }
     gotoProfilePage = async () => {
-        await this.page.goto(this.profileURL);
-        await this.page.waitForLoadState('domcontentloaded'); 
+    await this.page.locator('#profile-card-avatar-border').click(); 
     };
     async uploadProfilePicture(filePath: string) {
         await this.edit_profile_outer_button.click();
@@ -107,6 +105,7 @@ export class UserProfile {
         await this.upload_photo_button.click();
         const fileChooser = await fileChooserPromise;
         await fileChooser.setFiles(filePath);
+        if (await this.page.getByText('Image is larger than 2MB').isVisible()) return false;
         await this.save_changes_button.click();
         await this.save_photo_button.click();
         await this.page.waitForTimeout(5000);
@@ -192,5 +191,17 @@ export class UserProfile {
         await this.delete_skill_button.click();
         await this.page.getByRole('button', { name: 'Delete' }).click(); // confirmation button
     }
+    async uploadResume(filePath: string, isValid: boolean) {
+        await this.page.getByRole('button', { name: 'Add profile section' }).click();
+        await this.page.getByRole('button', { name: 'Recommended' }).click();
+        await this.page.getByRole('button', { name: 'Add Resume' }).click();
+        // Trigger file chooser and set file
+        const [fileChooser] = await Promise.all([
+            this.page.waitForEvent('filechooser'),
+            this.page.getByText('Drag and drop your resume').click()
+        ]);
+        await fileChooser.setFiles(filePath);
+        if (isValid) await this.upload_resume_button.click();
+        
+    }
 }
-   
