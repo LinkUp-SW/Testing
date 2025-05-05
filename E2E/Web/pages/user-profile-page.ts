@@ -108,12 +108,10 @@ export class UserProfile {
         if (await this.page.getByText('Image is larger than 2MB').isVisible()) return false;
         await this.save_changes_button.click();
         await this.save_photo_button.click();
-        await this.page.waitForTimeout(5000);
     }
     async deleteProfilePicture() {
         await this.edit_profile_outer_button.click();
         await this.delete_photo_button.click();
-        await this.page.waitForTimeout(5000);
     }
     async uploadCoverPhoto(filePath: string) {
         await this.edit_cover_photo_outer_button.click();
@@ -122,12 +120,10 @@ export class UserProfile {
         const fileChooser = await fileChooserPromise;
         await fileChooser.setFiles(filePath);
         await this.save_cover_photo_button.click();
-        await this.page.waitForTimeout(5000);
     }
     async deleteCoverPhoto() {
         await this.edit_cover_photo_outer_button.click();
         await this.delete_cover_photo_button.click();
-        await this.page.waitForTimeout(5000);
     }
     async addExperience(title : string, employment_type : string, company : string, start_month, start_year, end_month, end_year, location, location_type,
         description) {
@@ -150,7 +146,6 @@ export class UserProfile {
             await this.page.getByRole('option', { name: location_type }).click();
             await this.experience_description.fill(description);
             await this.experience_submit_button.click();
-            await this.page.waitForTimeout(2000);
     }
     async deleteExperience() {
         await this.delete_experience_button.click();
@@ -201,7 +196,10 @@ export class UserProfile {
             this.page.getByText('Drag and drop your resume').click()
         ]);
         await fileChooser.setFiles(filePath);
-        if (isValid) await this.upload_resume_button.click();
-        
+        if (isValid) 
+        {
+            await this.upload_resume_button.click(); 
+            await this.page.waitForTimeout(2000);      
+        }
     }
 }

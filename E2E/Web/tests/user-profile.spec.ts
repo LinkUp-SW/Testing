@@ -11,7 +11,7 @@ const validCredentials = {
     valid_cover_photo: 'D:\\Mohamed\\BDE\\Software Engineering\\LinkUp Repo\\Testing\\E2E\\Web\\Assets\\cover.webp',
     experience_title: 'Left Winger',
     employment_type: 'Full-time',
-    company: 'Orange',
+    company: 'NASA',
     start_month: 'March',
     start_year: '2022',
     end_month: 'December',
@@ -37,7 +37,7 @@ test.describe('Profile Picture Testcases', () => {
     let userProfilePage: UserProfile;
 
     test.beforeEach(async ({ page }) => {
-        test.setTimeout(15000); // 15 seconds timeout for this test
+        test.setTimeout(15000); // 20 seconds timeout for this test
 
         let loginPage = new LoginPage(page);
         await loginPage.gotoLoginPage();
