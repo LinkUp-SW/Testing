@@ -77,19 +77,25 @@ test.describe('Login Functionality', () => {
 
     test('should show error when using XSS', async () => {
         await loginPage.login(xssAttackCredentials.username, xssAttackCredentials.password);
+        
         expect(await loginPage.hasEmailError()).toBeTruthy();
         expect(await loginPage.getEmailErrorText()).toContain('Please enter a valid email address or phone number');
     });
 
     test('should show error for unregistered email in password reset', async () => {
         await loginPage.forgotPassword(unregisteredEmail);
+        
+        
         await loginPage.page.waitForSelector('text=Email not registered', { state: 'visible', timeout: 5000 });
+        
         expect(await loginPage.hasUnregisteredEmailError()).toBeTruthy();
         expect(await loginPage.getUnregisteredEmailErrorText()).toContain('Email not registered');
     });
 
     test('should show error when forgotpassword email is empty', async () => {
         await loginPage.forgotPassword('');
+        
+        
         expect(await loginPage.hasForgotPasswordError()).toBeTruthy();
         expect(await loginPage.getForgotPasswordErrorText()).toContain('Please Enter your email');
     });
