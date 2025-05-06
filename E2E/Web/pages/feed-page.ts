@@ -1,11 +1,11 @@
-import { Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 
 export class FeedPage {
     public readonly page: Page;
     
     // URL
-    private readonly feedURL = 'http://localhost:5173/feed';
-    private readonly savedPostsURL = 'http://localhost:5173/saved-posts';
+    private readonly feedURL = 'https://linkup-app.tech/feed';
+    private readonly savedPostsURL = 'http://linkup-app.tech/my-items/saved-posts';
     
     // Page elements
     private readonly startPostButton;
@@ -43,6 +43,14 @@ export class FeedPage {
     private readonly saveSuccessToast;
     private readonly viewSavedPostsLink;
 
+    
+    // Repost elements
+    private readonly repostButton;
+    private readonly repostInstantlyButton;
+    private readonly repostWithThoughtsButton;
+    private readonly repostSuccessToast;
+    private readonly repostWithThoughtsSuccessToast;
+
     constructor(page: Page) {
         this.page = page;
         this.startPostButton = page.getByRole('button', { name: 'Start a post' });
@@ -76,6 +84,11 @@ export class FeedPage {
         this.savePostButton = page.getByRole('button', { name: 'Save' });
         this.saveSuccessToast = page.getByText('Post saved. View saved posts');
         this.viewSavedPostsLink = page.getByText('View saved posts');
+        this.repostButton = page.getByRole('button', { name: 'Repost' });
+        this.repostInstantlyButton = page.getByRole('button', { name: 'Repost Instantly bring this' });
+        this.repostWithThoughtsButton = page.getByRole('button', { name: 'Repost with your thoughts' });
+        this.repostSuccessToast = page.getByText('Post reposted successfully!');
+        this.repostWithThoughtsSuccessToast = page.getByText('Repost successful!');
     }
 
     gotoFeedPage = async () => {
@@ -250,5 +263,55 @@ export class FeedPage {
         if (!postExists) {
             throw new Error(`Post with text "${postText}" not found in saved posts.`);
         }
+    }
+
+    async createPostWithUserTag(initialText: string) {
+        const taggedUsername = 'Admin Boss';
+        const tagText = `@${taggedUsername}:Admin-Boss73^ `;
+        const fullPostText = `${initialText} ${tagText}`; 
+        await this.startPostButton.click();
+        await this.postTextarea.fill(fullPostText);
+        await this.page.waitForTimeout(500);
+        await this.postButton.click();
+        await this.successToast.waitFor({ state: 'visible' });
+        await this.viewPostLink.click();
+        return taggedUsername;
+    }
+    
+    async verifyTaggedUserRedirection(expectedUsername: string = 'Admin Boss') {
+        const taggedUserLink = this.page.getByRole('link', { name: expectedUsername }).first();
+        await taggedUserLink.waitFor({ state: 'visible' });
+        await taggedUserLink.click();
+        const profileHeading = this.page.getByRole('heading', { name: expectedUsername });
+        await expect(profileHeading).toBeVisible();
+       await this.page.goBack();
+    }
+    
+    async addCommentWithUserTag(initialText: string) {
+        const taggedUsername = 'Admin Boss';
+        const tagText = `@${taggedUsername}:Admin-Boss73^ `;
+        const fullCommentText = `${initialText} ${tagText}`;
+        await this.commentButton.click();
+        await this.commentTextarea.fill(fullCommentText);
+        await this.page.waitForTimeout(500);
+        await this.submitCommentButton.click();
+        await this.commentSuccessToast.waitFor({ state: 'visible' });
+        return taggedUsername;
+    }
+    
+    async repostInstantly() {
+        await this.repostButton.click();
+        await this.repostInstantlyButton.click();
+        await this.repostSuccessToast.waitFor({ state: 'visible' });
+        await this.repostSuccessToast.click();
+    }
+    
+    async repostWithThoughts(thoughts: string) {
+        await this.repostButton.click();
+        await this.repostWithThoughtsButton.click();
+        await this.postTextarea.fill(thoughts);
+        await this.postButton.click();
+        await this.repostWithThoughtsSuccessToast.waitFor({ state: 'visible' });
+        await this.repostWithThoughtsSuccessToast.click();
     }
 }
