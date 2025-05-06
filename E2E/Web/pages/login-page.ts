@@ -36,11 +36,11 @@ export class LoginPage {
 
     gotoLoginPage = async () => {
         await this.page.goto(this.loginUrl);
-        await this.page.waitForLoadState('domcontentloaded'); 
+        await this.page.waitForLoadState('domcontentloaded');
     };
 
     async login(username: string, password: string) {
-        await this.email_textbox.waitFor(); 
+        await this.email_textbox.waitFor();
         await this.email_textbox.fill(username);
         await this.password_textbox.waitFor();
         await this.password_textbox.fill(password);
@@ -53,11 +53,11 @@ export class LoginPage {
     async forgotPassword(email: string) {
         await this.forgotPasswordLink.waitFor();
         await this.forgotPasswordLink.click();
-        
+
         await this.forgotPasswordEmailInput.waitFor();
         await this.forgotPasswordEmailInput.click();
         await this.forgotPasswordEmailInput.fill(email);
-        
+
         await this.forgotPasswordContinueButton.waitFor();
         await this.forgotPasswordContinueButton.click();
         
