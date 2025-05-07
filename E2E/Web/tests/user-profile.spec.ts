@@ -4,7 +4,7 @@ import { LoginPage } from '../pages/login-page';
 
 // Test data
 const validCredentials = {
-    email: 'mathys@tel.com',
+    email: 'jq6qb795em@daouse.com',
     password: 'abc-ABC-12',
     valid_profile_pic: 'D:\\Mohamed\\BDE\\Software Engineering\\LinkUp Repo\\Testing\\E2E\\Web\\Assets\\Tel.jpg',
     oversized_profile_pic: 'D:\\Mohamed\\BDE\\Software Engineering\\LinkUp Repo\\Testing\\E2E\\Web\\Assets\\bigImage.jpg',
